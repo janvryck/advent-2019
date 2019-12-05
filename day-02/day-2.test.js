@@ -1,4 +1,4 @@
-const {executeIntCode} = require('./day-2');
+const {executeIntCode, bruteForceNounVerb} = require('./day-2');
 
 describe("Executes IntCode programs correctly", () => {
     it("Expects an array as input", () => {
@@ -7,7 +7,7 @@ describe("Executes IntCode programs correctly", () => {
         expect(() => executeIntCode("string")).toThrowError(new Error("Input should be a non-empty array."));
         expect(() => executeIntCode([])).toThrowError(new Error("Input should be a non-empty array."));
         expect(() => executeIntCode([99])).not.toThrowError(new Error("Input should be a non-empty array."));
-    })
+    });
 });
 
 describe("Executes IntCode programs correctly", () => {
@@ -36,4 +36,10 @@ describe("Executes IntCode programs correctly", () => {
         const expected = [30, 1, 1, 4, 2, 5, 6, 0, 99];
         expect(executeIntCode(given)).toEqual(expected);
     });
+});
+
+describe("Brute forces correct noun and verb", () => {
+   it("Returns given noun and verb for correct output of part 1", () => {
+       expect(bruteForceNounVerb(10566835)).toEqual(1202);
+   });
 });
