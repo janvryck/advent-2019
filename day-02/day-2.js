@@ -37,15 +37,37 @@ const executeIntCode = (intCodeInput) => {
     return prog;
 };
 
-const inputProg = () => {
+const inputProg = (noun, verb) => {
     const rawInput = readFile("./input.txt").toString();
     const prog1202 = rawInput.split(',');
-    prog1202[1] = 12;
-    prog1202[2] = 2;
+    prog1202[1] = noun;
+    prog1202[2] = verb;
     return prog1202.map(i => Number(i));
 };
-console.log(executeIntCode(inputProg())[0]);
+
+const part1 = () => {
+    return executeIntCode(inputProg(12, 2))[0];
+};
+
+const bruteForceNounVerb = (expectedOutput) => {
+    for(let noun = 1; noun <= 99; noun++) {
+        for(let verb = 1; verb <= 99; verb++) {
+            const output = executeIntCode(inputProg(noun, verb))[0];
+            if (output === expectedOutput) {
+                return 100 * noun + verb;
+            }
+        }
+    }
+};
+
+const part2 = () => {
+    return bruteForceNounVerb(19690720);
+};
+
+console.log(`Part 1: ${part1()}`);
+console.log(`Part 2: ${part2()}`);
 
 module.exports = {
-    executeIntCode: executeIntCode
+    executeIntCode: executeIntCode,
+    bruteForceNounVerb: bruteForceNounVerb
 };
