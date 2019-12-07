@@ -8,7 +8,8 @@ function moveLeft(current, length, coordinates) {
     for (let x = start.x - 1; x >= (start.x - length); x--) {
         current = {
             x: x,
-            y: start.y
+            y: start.y,
+            steps: current.steps + 1
         };
         coordinates.push(current);
     }
@@ -20,7 +21,8 @@ function moveUp(current, length, coordinates) {
     for (let y = start.y + 1; y <= (start.y + length); y++) {
         current = {
             x: start.x,
-            y: y
+            y: y,
+            steps: current.steps + 1
         };
         coordinates.push(current);
     }
@@ -32,7 +34,8 @@ function moveRight(current, length, coordinates) {
     for (let x = start.x + 1; x <= (start.x + length); x++) {
         current = {
             x: x,
-            y: start.y
+            y: start.y,
+            steps: current.steps + 1
         };
         coordinates.push(current);
     }
@@ -44,7 +47,8 @@ function moveDown(current, length, coordinates) {
     for (let y = start.y - 1; y >= (start.y - length); y--) {
         current = {
             x: start.x,
-            y: y
+            y: y,
+            steps: current.steps + 1
         };
         coordinates.push(current);
     }
@@ -76,45 +80,73 @@ function addCoordinatesForPath(current, coordinates) {
 }
 
 const parseToCoordinates = function (wire) {
-    let current = {x: 0, y: 0};
+    let current = {x: 0, y: 0, steps: 0};
     const coordinates = [];
 
     wire.forEach(addCoordinatesForPath(current, coordinates));
     return coordinates.sort((a, b) => manhattanDistance(a) - manhattanDistance(b));
 };
 
-const closestIntersection = function (arr1, arr2) {
-    const arr1Str = arr1.map(item => JSON.stringify(item));
-    const arr2Str = arr2.map(item => JSON.stringify(item));
+function allIntersectionsFor(arr1, arr2) {
+    const matchingX = arr1.filter(p1 => arr2.find(p2 => p2.x === p1.x));
+    const matchingY = matchingX.filter(p1 => arr2.find(p2 => p2.x === p1.x && p2.y === p1.y));
 
-    for (const str of arr1Str) {
-        if (arr2Str.indexOf(str) > -1) {
-            return JSON.parse(str);
-        }
-    }
+    return matchingY
+        .map(p1 => {
+            const match = arr2.find(p2 => p2.x === p1.x && p2.y === p1.y);
+            return {
+                ...p1,
+                steps: p1.steps + match.steps
+            }
+        });
+}
+
+const closestIntersection = function (arr1, arr2) {
+    return allIntersectionsFor(arr1, arr2)[0];
+};
+
+const quickestIntersection = function (arr1, arr2) {
+    return allIntersectionsFor(arr1, arr2)
+        .sort((a, b) => a.steps - b.steps)[0];
 };
 
 const manhattanDistance = function (point) {
     return Math.abs(point.x) + Math.abs(point.y)
 };
 
-const manhattanDistanceFor = (first, second) => {
+const lowestManhattanDistanceFor = (first, second) => {
     const firstWire = parseToCoordinates(first);
     const secondWire = parseToCoordinates(second);
 
     return manhattanDistance(closestIntersection(firstWire, secondWire));
 };
 
+const stepsToClosestIntersection = (first, second) => {
+    const firstWire = parseToCoordinates(first);
+    const secondWire = parseToCoordinates(second);
+
+    return quickestIntersection(firstWire, secondWire).steps;
+};
+
 const part1 = function () {
     const lines = readFile("input.txt").toString().split(/\r?\n/);
-    return manhattanDistanceFor(
+    return lowestManhattanDistanceFor(
         lines[0].split(","),
         lines[1].split(",")
     )
 };
 console.log(part1());
 
+const part2 = function () {
+    const lines = readFile("input.txt").toString().split(/\r?\n/);
+    return stepsToClosestIntersection(
+        lines[0].split(","),
+        lines[1].split(",")
+    )
+};
+console.log(part2());
+
 module.exports = {
-    manhattanDistanceFor: manhattanDistanceFor,
-    stepsToClosestIntersection: () => null
+    lowestManhattanDistanceFor: lowestManhattanDistanceFor,
+    stepsToClosestIntersection: stepsToClosestIntersection
 };
