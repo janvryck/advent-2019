@@ -51,5 +51,6 @@ const part1 = function () {
 console.log(part1());
 
 module.exports = {
-    isPotential: isPotential
+    isPotential: isPotential,
+    isPotentialWithDoubles: () => null
 };
