@@ -9,7 +9,7 @@ const generateRange = function (lower, upper) {
 };
 
 const isPotential = function (p) {
-    return isOrdered(p) && containsDuplicates(p)
+    return isOrdered(p) && containsMultipleOccurences(p)
 };
 
 const isOrdered = function (p) {
@@ -32,10 +32,24 @@ const strictEqual = function (a, b) {
     return true;
 };
 
-const containsDuplicates = function (o) {
+const containsMultipleOccurences = function (o) {
     for (const c of o) {
         let occurences = (o.match(new RegExp(c, "g")) || []).length;
         if (occurences > 1) {
+            return true
+        }
+    }
+    return false;
+};
+
+const isPotentialWithDoubles = function (p) {
+    return isOrdered(p) && containsDuplicates(p)
+};
+
+const containsDuplicates = function (o) {
+    for (const c of o) {
+        let occurences = (o.match(new RegExp(c, "g")) || []).length;
+        if (occurences === 2) {
             return true
         }
     }
@@ -50,7 +64,15 @@ const part1 = function () {
 
 console.log(part1());
 
+const part2 = function () {
+    return generateRange(input[0], input[1])
+        .filter(isPotentialWithDoubles)
+        .length;
+};
+
+console.log(part2());
+
 module.exports = {
     isPotential: isPotential,
-    isPotentialWithDoubles: () => null
+    isPotentialWithDoubles: isPotentialWithDoubles
 };
