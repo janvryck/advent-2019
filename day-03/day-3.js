@@ -115,5 +115,6 @@ const part1 = function () {
 console.log(part1());
 
 module.exports = {
-    manhattanDistanceFor: manhattanDistanceFor
+    manhattanDistanceFor: manhattanDistanceFor,
+    stepsToClosestIntersection: () => null
 };
