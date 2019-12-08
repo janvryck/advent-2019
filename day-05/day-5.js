@@ -25,6 +25,8 @@ const paramsFrom = function (instruction, position) {
 
 const decodeInstruction = function (position) {
     let instruction = memory[position];
+
+    const op = instruction % 100;
     const params = paramsFrom(instruction, position);
 
     switch (instruction % 100) {
@@ -53,16 +55,23 @@ const decodeInstruction = function (position) {
 };
 
 const runProgram = function (program, i = 1) {
+    init();
     memory = program.split(',').map(m => Number(m));
     input = i;
     let position = 0;
     while (position >= 0) {
         position = decodeInstruction(position);
     }
-    console.log(output.reverse()[0]);
+    return output.reverse()[0];
 };
 
+const readFile = (filePath) => fs.readFileSync(path.resolve(__dirname, filePath), 'utf-8');
+
 const part1 = function () {
-    init();
-    runProgram(readFile('input.txt'));
-}();
+    const diagnosticCode = runProgram(readFile('input.txt'));
+    console.log(`Diagnostic code: ${diagnosticCode}`);
+};
+
+module.exports = {
+    runProgram: runProgram
+};
