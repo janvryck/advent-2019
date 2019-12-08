@@ -3,9 +3,7 @@ const path = require('path');
 
 let memory, input, output;
 
-const readFile = (filePath) => fs.readFileSync(path.resolve(__dirname, filePath), 'utf-8');
-
-const init = function() {
+const init = function () {
     memory = [];
     input = undefined;
     output = [];
@@ -23,35 +21,49 @@ const paramsFrom = function (instruction, position) {
     return params;
 };
 
+const instructions = {
+    1: (position, a, b) => {
+        memory[memory[position + 3]] = a + b;
+        return position + 4;
+    },
+    2: (position, a, b) => {
+        memory[memory[position + 3]] = a * b;
+        return position + 4;
+    },
+    3: (position) => {
+        memory[memory[position + 1]] = input;
+        return position + 2;
+    },
+    4: (position) => {
+        let out = memory[position] === 4 ? memory[memory[position + 1]] : memory[position + 1];
+        output.push(out);
+        return position + 2;
+    },
+    5: (position, a, b) => Number(a) !== 0 ? b : position + 3,
+    6: (position, a, b) => Number(a) === 0 ? b : position + 3,
+    7: (position, a, b) => {
+        memory[memory[position + 3]] = a < b ? 1  : 0;
+        return position + 4
+    },
+    8: (position, a, b) => {
+        memory[memory[position + 3]] = a === b ? 1  : 0;
+        return position + 4
+    },
+    99: () => {
+        return -1;
+    }
+};
+
 const decodeInstruction = function (position) {
     let instruction = memory[position];
 
     const op = instruction % 100;
     const params = paramsFrom(instruction, position);
 
-    switch (instruction % 100) {
-        case 1:
-            // add
-            memory[memory[position + 3]] = params[0] + params[1];
-            return position + 4;
-        case 2:
-            // multiply
-            memory[memory[position + 3]] = params[0] * params[1];
-            return position + 4;
-        case 3:
-            // store
-            memory[memory[position + 1]] = input;
-            return position + 2;
-        case 4:
-            // retrieve
-            output.push(memory[memory[position + 1]]);
-            return position + 2;
-        case 99:
-            // halt
-            return -1;
-        default:
-            throw new Error("Unknown instruction: " + instruction);
+    if (instructions.hasOwnProperty(op)) {
+        return instructions[op](position, ...params);
     }
+    throw new Error(`Unknown operation '${op}' in instruction '${instruction}' at position ${position}`);
 };
 
 const runProgram = function (program, i = 1) {
@@ -68,9 +80,13 @@ const runProgram = function (program, i = 1) {
 const readFile = (filePath) => fs.readFileSync(path.resolve(__dirname, filePath), 'utf-8');
 
 const part1 = function () {
-    const diagnosticCode = runProgram(readFile('input.txt'));
-    console.log(`Diagnostic code: ${diagnosticCode}`);
+    const diagnosticCode = runProgram(readFile('input.txt'), 1);
+    console.log(`P1 - Diagnostic code: ${diagnosticCode}`);
 };
+const part2 = function () {
+    const diagnosticCode = runProgram(readFile('input.txt'), 5);
+    console.log(`P2 - Diagnostic code: ${diagnosticCode}`);
+}();
 
 module.exports = {
     runProgram: runProgram
