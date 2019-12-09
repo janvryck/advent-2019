@@ -36,13 +36,17 @@ function orbitsFor(orbits, key) {
     return Number(amount);
 }
 
+const transfersBetween = function(input, from, to) {
+
+};
+
 const part1 = function () {
     const inputLines = readFile("./input.txt").toString().split(/\r?\n/);
     return totalOrbitsFor(inputLines);
 };
-
-console.log(part1());
+// console.log(part1());
 
 module.exports = {
-    totalOrbitsFor: totalOrbitsFor
+    totalOrbitsFor: totalOrbitsFor,
+    transfersBetween: transfersBetween
 };
